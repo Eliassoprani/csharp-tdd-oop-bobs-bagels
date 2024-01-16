@@ -119,6 +119,7 @@ public class Tests
         List<string> fillings = new List<string>();
         fillings.Add("FILB");
         _basket.Add("BGLO", fillings);
+        _basket.Add("BGLO");
         string result = _basket.Remove(itemToRemove);
         Assert.AreEqual("item removed from your basket", result);
     }
