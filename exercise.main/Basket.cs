@@ -6,36 +6,43 @@ namespace main
     public class Basket
     {
         private int BasketCapacity;
-        private List <List<InventoryItem>> ItemsInBasket;
+        private List <InventoryItem> ItemsInBasket;
         private BobsInventory BobsInventory;
 
-        public Basket()
+        public Basket(BobsInventory bobsinventory)
         {
-            BobsInventory = new BobsInventory();
+            BobsInventory = bobsinventory;
             BasketCapacity = 5;
-            ItemsInBasket = new List<List<InventoryItem>>();
+            ItemsInBasket = new List<InventoryItem>();
         }
 
         public float CostOfItem(string SKU)
         {
             bool outParam; // does not do anything. Will need to refactor this later
-            List<InventoryItem> item = BobsInventory.GetItem(SKU, out outParam, null);
-            float cost = item != null ? item[0].Price : 0;
+            InventoryItem item = BobsInventory.GetItem(SKU, null);
+            float cost = item != null ? item.Price : 0;
             return cost;
         }
-
         public float TotalPrice()
         {
             float result = 0.0f;
+
+            float itemCost = 0.0f;
             for (int i = 0; i < ItemsInBasket.Count(); i++)
             {
-                float itemCost = 0.0f;
-                for (int j = 0; j < ItemsInBasket[i].Count(); j++)
+                float bagelFillingCost = 0;
+                if (ItemsInBasket[i] is Bagel)
                 {
-                    itemCost += ItemsInBasket[i][j].Price;
+                    Bagel bagel = (Bagel)ItemsInBasket[i];
+                    for (int j = 0; j < bagel.Fillings.Count(); j++)
+                    {
+                        bagelFillingCost += bagel.Fillings[j].Price;
+                    }
                 }
-                result += itemCost;
+                itemCost += ItemsInBasket[i].Price + bagelFillingCost;
             }
+            result += itemCost;
+            
             return result;
         }
 
@@ -46,59 +53,72 @@ namespace main
                 return "Your basket is full";
             }
             bool FillingWithoutBagel;
-            List<InventoryItem> item = BobsInventory.GetItem(SKU, out FillingWithoutBagel, SKUFilling);
+            InventoryItem item = BobsInventory.GetItem(SKU, SKUFilling);
             if (item == null)
                 return $"{SKU} is not an item on our menu";
 
-            if (ItemsInBasket.Count < BasketCapacity && item.Count() == 1)
-                {
-                    ItemsInBasket.Add(item);
-                    return $"{item[0].Variant} {item[0].Name} added to your basket";
-                }
-            if (ItemsInBasket.Count < BasketCapacity && item.Count() > 1)
+            if(item is Bagel)
             {
+                Bagel bagel = (Bagel)item;
                 string fillingsString = "";
-                for (int i = 1; i < item.Count(); i++)
+                for (int i = 0; i < bagel.Fillings.Count(); i++)
                 {
-                    if(i == item.Count() - 1)
+                    if (i == bagel.Fillings.Count() - 1)
                     {
-                        fillingsString += $"{item[i].Variant}";
+                        fillingsString += $"{bagel.Fillings[i].Variant}";
                         break;
                     }
-                    fillingsString += $"{item[i].Variant} ";
+                    fillingsString += $"{bagel.Fillings[i].Variant} ";
                 }
                 ItemsInBasket.Add(item);
-                return $"{item[0].Variant} {item[0].Name} with {fillingsString} filling added to your basket";
+                return $"{bagel.Variant} {bagel.Name} with {(fillingsString.Length == 0 ? "no" : fillingsString)} filling added to your basket";
             }
-            if (FillingWithoutBagel)
-            {
-                return "Can only add filling to bagel";
-            }
-            return "";
+            ItemsInBasket.Add(item);
+            return $"{item.Variant} {item.Name} added to your basket";
+          
         }
 
-        public string Remove(List<InventoryItem> item)
+        public string Remove(InventoryItem item)
         {
             string output = "item does not exist in basket";
-            foreach (var basketList in ItemsInBasket)
+
+            for (int i = 0; i < ItemsInBasket.Count; i++)
             {
-                if (basketList.Count == item.Count &&
-                    basketList.All(basketItem => item.Any(i => AreInventoryItemsEqual(basketItem, i))))
+                if (AreItemsEqual(ItemsInBasket[i], item))
                 {
-                    ItemsInBasket.Remove(basketList);
+                    ItemsInBasket.RemoveAt(i);
                     output = "item removed from your basket";
-                    break; 
                 }
             }
+
             return output;
         }
-        private bool AreInventoryItemsEqual(InventoryItem item1, InventoryItem item2)
+
+        private bool AreItemsEqual(InventoryItem item1, InventoryItem item2)
         {
+            if (item1 is Bagel bagel1 && item2 is Bagel bagel2)
+            {
+                // Compare properties of the Bagel class
+                bool arePropertiesEqual = bagel1.Name == bagel2.Name &&
+                                          bagel1.Price == bagel2.Price &&
+                                          bagel1.SKU == bagel2.SKU &&
+                                          bagel1.Variant == bagel2.Variant;
+
+                // Compare Fillings lists
+                bool areFillingsEqual = bagel1.Fillings.Count == bagel2.Fillings.Count &&
+                                        bagel1.Fillings.All(filling1 =>
+                                            bagel2.Fillings.Any(filling2 => AreItemsEqual(filling1, filling2)));
+
+                return arePropertiesEqual && areFillingsEqual;
+            }
+
+            // Compare properties for other types
             return item1.Name == item2.Name &&
                    item1.Price == item2.Price &&
                    item1.SKU == item2.SKU &&
                    item1.Variant == item2.Variant;
         }
+
 
 
         public string UpdateCapacity(int newCapacity)

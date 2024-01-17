@@ -12,37 +12,29 @@ namespace main
             inventory = new Dictionary<string, InventoryItem>();
             FillInventory();
         }
-        public List<InventoryItem> GetItem(string SKU, out bool FillingWithoutBagel, List<string> SKUFilling = null)
+        public InventoryItem GetItem(string SKU, List<string> SKUFilling = null)
         {
-            List<InventoryItem> returnItem = new List<InventoryItem>();
+            InventoryItem returnItem = null;
+            List<InventoryItem> fillingList = new List<InventoryItem>();
             if (!inventory.ContainsKey(SKU))
             {
                 returnItem = null;
             }
-            if (inventory.ContainsKey(SKU) && SKUFilling == null)
+            else
             {
-                returnItem.Add(inventory[SKU]);
-                FillingWithoutBagel = false;
-                return returnItem;
+                returnItem = inventory[SKU];
             }
-
-            if (inventory.ContainsKey(SKU) && SKUFilling != null)
+            if (inventory.ContainsKey(SKU) && SKUFilling != null && inventory[SKU] is Bagel)
             {
-                if (inventory[SKU].Name != "Bagel")
-                {
-                    // SKU is not a bagel, so don't add it
-                    FillingWithoutBagel = true;
-                    return returnItem;
-                }
 
-                returnItem.Add(inventory[SKU]);
+                returnItem = inventory[SKU];
 
                 // Check if each SKUFilling value is in inventory
                 foreach (var filling in SKUFilling)
                 {
                     if (inventory.ContainsKey(filling))
                     {
-                        returnItem.Add(inventory[filling]);
+                        fillingList.Add(inventory[filling]);
                     }
                     else
                     {
@@ -50,31 +42,30 @@ namespace main
                     }
                 }
 
-                FillingWithoutBagel = false;
-                return returnItem;
+                Bagel bagel = (Bagel)returnItem;
+                bagel.AddFilling(fillingList);
+                returnItem = bagel;
             }
-
-            FillingWithoutBagel = false;
             return returnItem;
         }
 
 
         private void FillInventory()
         {
-            inventory.Add("BGLO", new InventoryItem("BGLO", 0.49f, "Bagel", "Onion"));
-            inventory.Add("BGLP", new InventoryItem("BGLP", 0.39f, "Bagel", "Plain"));
-            inventory.Add("BGLE", new InventoryItem("BGLE", 0.49f, "Bagel", "Everything"));
-            inventory.Add("BGLS", new InventoryItem("BGLS", 0.49f, "Bagel", "Sesame"));
-            inventory.Add("COFB", new InventoryItem("COFB", 0.99f, "Coffee", "Black"));
-            inventory.Add("COFW", new InventoryItem("COFW", 1.19f, "Coffee", "White"));
-            inventory.Add("COFC", new InventoryItem("COFC", 1.29f, "Coffee", "Capuccino"));
-            inventory.Add("COFL", new InventoryItem("COFL", 1.29f, "Coffee", "Latte"));
-            inventory.Add("FILB", new InventoryItem("FILB", 0.12f, "Filling", "Bacon"));
-            inventory.Add("FILE", new InventoryItem("FILE", 0.12f, "Filling", "Egg"));
-            inventory.Add("FILC", new InventoryItem("FILC", 0.12f, "Filling", "Cheese"));
-            inventory.Add("FILX", new InventoryItem("FILX", 0.12f, "Filling", "Cream Cheese"));
-            inventory.Add("FILS", new InventoryItem("FILS", 0.12f, "Filling", "Smoked Salmon"));
-            inventory.Add("FILH", new InventoryItem("FILH", 0.12f, "Filling", "Ham"));
+            inventory.Add("BGLO", new Bagel("BGLO", 0.49f, "Onion", "Bagel"));
+            inventory.Add("BGLP", new Bagel("BGLP", 0.39f, "Plain", "Bagel"));
+            inventory.Add("BGLE", new Bagel("BGLE", 0.49f, "Everything", "Bagel"));
+            inventory.Add("BGLS", new Bagel("BGLS", 0.49f, "Sesame", "Bagel"));
+            inventory.Add("COFB", new Coffee("COFB", 0.99f, "Black", "Coffee"));
+            inventory.Add("COFW", new Coffee("COFW", 1.19f, "White", "Coffee"));
+            inventory.Add("COFC", new Coffee("COFC", 1.29f, "Capuccino", "Coffee"));
+            inventory.Add("COFL", new Coffee("COFL", 1.29f, "Latte", "Filling"));
+            inventory.Add("FILB", new Filling("FILB", 0.12f, "Bacon", "Filling"));
+            inventory.Add("FILE", new Filling("FILE", 0.12f, "Egg", "Filling"));
+            inventory.Add("FILC", new Filling("FILC", 0.12f, "Cheese", "Filling"));
+            inventory.Add("FILX", new Filling("FILX", 0.12f, "Cream Cheese", "Filling"));
+            inventory.Add("FILS", new Filling("FILS", 0.12f, "Smoked Salmon", "Filling"));
+            inventory.Add("FILH", new Filling("FILH", 0.12f, "Ham", "Filling"));
         }
 
     }

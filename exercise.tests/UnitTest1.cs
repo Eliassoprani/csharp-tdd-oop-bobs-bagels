@@ -8,7 +8,7 @@ public class Tests
     [SetUp]
     public void Setup()
     {
-        _basket = new Basket();
+        _basket = new Basket(new BobsInventory());
     }
 
     [Test]
@@ -26,7 +26,7 @@ public class Tests
     public void AddTest2()
     {
         string result = _basket.Add("BGLO");
-        Assert.AreEqual("Onion Bagel added to your basket", result);
+        Assert.AreEqual("Onion Bagel with no filling added to your basket", result);
     }
 
     [Test]
@@ -113,22 +113,23 @@ public class Tests
     [Test]
     public void RemoveTest1()
     {
-        List<InventoryItem> itemToRemove = new List<InventoryItem>();
-        itemToRemove.Add(new InventoryItem("BGLO", 0.49f, "Bagel", "Onion"));
-        itemToRemove.Add(new InventoryItem("FILB", 0.12f, "Filling", "Bacon"));
+        BobsInventory bobsInventory = new BobsInventory();
+        List<string> testfillings = new List<string>();
+        testfillings.Add("FILE");
+        InventoryItem itemToRemove = bobsInventory.GetItem("BGLO", testfillings);
+
         List<string> fillings = new List<string>();
-        fillings.Add("FILB");
+        fillings.Add("FILE");
         _basket.Add("BGLO", fillings);
-        _basket.Add("BGLO");
         string result = _basket.Remove(itemToRemove);
         Assert.AreEqual("item removed from your basket", result);
     }
     [Test]
     public void RemoveTest2()
     {
-        List<InventoryItem> itemToRemove = new List<InventoryItem>();
-        itemToRemove.Add(new InventoryItem("BGLO", 0.49f, "Bagel", "Onion"));
-        itemToRemove.Add(new InventoryItem("FILB", 0.12f, "Filling", "Bacon"));
+        BobsInventory bobsInventory = new BobsInventory();
+        InventoryItem itemToRemove = bobsInventory.GetItem("BGLO");
+
         List<string> fillings = new List<string>();
         fillings.Add("FILE");
         _basket.Add("BGLO", fillings);
