@@ -14,7 +14,8 @@ namespace main
         }
         public InventoryItem GetItem(string SKU, out string inventoryMessage)
         {
-            if (!inventory.ContainsKey(SKU)){
+            if (!inventory.ContainsKey(SKU))
+            {
                 inventoryMessage = $"{SKU} is not an item on our menu";
                 return null;
             }
@@ -22,7 +23,7 @@ namespace main
             inventoryMessage = $"{inventory[SKU].Variant} {inventory[SKU].Name} added to your basket";
             return returnItem;
         }
-        
+
         public InventoryItem GetItem(string SKU, List<string> SKUFilling, out string inventoryMessage)
         {
             InventoryItem returnItem = null;
@@ -50,6 +51,11 @@ namespace main
             {
                 if (inventory.ContainsKey(filling))
                 {
+                    if (inventory[filling] is not Filling)
+                    {
+                        inventoryMessage = "Can only add filling to bagel";
+                        return null;
+                    }
                     fillingString += inventory[filling].Variant + " ";
                     fillingList.Add(inventory[filling]);
                 }

@@ -74,6 +74,15 @@ public class Tests
     }
 
     [Test]
+    public void AddTest8()
+    {
+        List<string> fillings = new List<string>();
+        fillings.Add("COFB");
+        string result = _basket.Add("BGLO", fillings);
+        Assert.AreEqual("Can only add filling to bagel", result);
+    }
+
+    [Test]
     public void TotalPriceTest1()
     {
         List<string> fillings = new List<string>();

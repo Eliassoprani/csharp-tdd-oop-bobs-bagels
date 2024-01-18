@@ -6,9 +6,8 @@ namespace main
     public class Basket
     {
         private int BasketCapacity;
-        private List <InventoryItem> ItemsInBasket;
+        private List<InventoryItem> ItemsInBasket;
         private BobsInventory BobsInventory;
-
         public Basket(BobsInventory bobsinventory)
         {
             BobsInventory = bobsinventory;
@@ -42,7 +41,7 @@ namespace main
                 itemCost += ItemsInBasket[i].Price + bagelFillingCost;
             }
             result += itemCost;
-            
+
             return result;
         }
 
@@ -66,7 +65,7 @@ namespace main
             string inventoryMessage;
             if (ItemsInBasket.Count() >= BasketCapacity)
                 return "Your basket is full";
-            
+
 
             InventoryItem item = BobsInventory.GetItem(SKU, SKUFilling, out inventoryMessage);
             if (item == null)
