@@ -6,12 +6,19 @@ namespace main
     public class BobsInventory
     {
         private Dictionary<string, InventoryItem> inventory;
-
         public BobsInventory()
         {
             inventory = new Dictionary<string, InventoryItem>();
             FillInventory();
         }
+
+        public float GetItemPrice(string SKU)
+        {
+            if (inventory.ContainsKey(SKU))
+                return inventory[SKU].Price;
+            return 0;
+        }
+
         public InventoryItem GetItem(string SKU, out string inventoryMessage)
         {
             if (!inventory.ContainsKey(SKU))
@@ -35,15 +42,12 @@ namespace main
                 return null;
             }
 
-
-
             returnItem = inventory[SKU];
             if (returnItem is not Bagel)
             {
                 inventoryMessage = "Can only add filling to bagel";
                 return null;
             }
-
 
             // Check if each SKUFilling value is in inventory
             string fillingString = "";
@@ -63,6 +67,7 @@ namespace main
                 {
                     inventoryMessage = $"{filling} is not an item on our menu";
                     return null;
+
                 }
             }
 
@@ -89,6 +94,5 @@ namespace main
             inventory.Add("FILS", new Filling("FILS", 0.12f, "Smoked Salmon", "Filling"));
             inventory.Add("FILH", new Filling("FILH", 0.12f, "Ham", "Filling"));
         }
-
     }
 }

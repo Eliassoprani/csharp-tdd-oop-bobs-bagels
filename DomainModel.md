@@ -80,12 +80,13 @@ METHODS
     public InventoryItem GetItem(string SKU, string SKUFilling, out inventoryMessage)
         returns InventoryItem and out string
             if item does not exist in inventory return null and out string
+    public float GetItemPrice(string SKU)
+        returns price of an item
     public InventoryItem GetItem(string SKU, out inventoryMessage)
         returns InventoryItem and out string
             if item does not exist in inventory return null and out string
     private void FillInventory()
         method to fill inventory with all items
-
 Class Basket:
     Properties:
         private int BasketCapacity

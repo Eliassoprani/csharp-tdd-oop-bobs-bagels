@@ -18,15 +18,13 @@ namespace main
         public float CostOfItem(string SKU)
         {
             string inventoryMessage;
-            InventoryItem item = BobsInventory.GetItem(SKU, out inventoryMessage);
-            float cost = item != null ? item.Price : 0;
-            return cost;
+            float price = BobsInventory.GetItemPrice(SKU);
+            return price;
         }
         public float TotalPrice()
         {
+            
             float result = 0.0f;
-
-            float itemCost = 0.0f;
             for (int i = 0; i < ItemsInBasket.Count(); i++)
             {
                 float bagelFillingCost = 0;
@@ -38,9 +36,8 @@ namespace main
                         bagelFillingCost += bagel.Fillings[j].Price;
                     }
                 }
-                itemCost += ItemsInBasket[i].Price + bagelFillingCost;
+                result += ItemsInBasket[i].Price + bagelFillingCost;
             }
-            result += itemCost;
 
             return result;
         }
@@ -115,8 +112,6 @@ namespace main
                    item1.SKU == item2.SKU &&
                    item1.Variant == item2.Variant;
         }
-
-
 
         public string UpdateCapacity(int newCapacity)
         {

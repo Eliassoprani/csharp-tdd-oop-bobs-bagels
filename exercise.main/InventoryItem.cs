@@ -7,7 +7,7 @@ public class InventoryItem
     private float _price;
     private string _variant;
     private string _name;
-    public string SKU { get { return _sku; } }
+    public string SKU { get { return _sku;  } }
     public float Price { get { return _price; } }
     public string Variant { get { return _variant; } }
     public string Name { get { return _name; } }
