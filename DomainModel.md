@@ -77,9 +77,12 @@ PROPERTIES
 METHODS
     Constructor()
         when instantiated this object calls method FillInventory to fill the inventory with InventoryItems to desired inventory
-    public InventoryItem GetItem(string SKU, string SKUFilling = null)
-        returns InventoryItem
-            if item does not exist in inventory return null
+    public InventoryItem GetItem(string SKU, string SKUFilling, out inventoryMessage)
+        returns InventoryItem and out string
+            if item does not exist in inventory return null and out string
+    public InventoryItem GetItem(string SKU, out inventoryMessage)
+        returns InventoryItem and out string
+            if item does not exist in inventory return null and out string
     private void FillInventory()
         method to fill inventory with all items
 
@@ -95,9 +98,12 @@ Class Basket:
                 If SKU does not exist in .inventory return 0
         float TotalPrice()
             loop through ItemsInBasket and count Price of each Item in List and return float totalprice
-        string Add(string SKU, List<string> SKUFilling = null)
-            returns "{ItemVariant} {itemName}- with no filling added to your basket" if SKU exists in inventory and filling is null and SKU is not a filling
-            returns "{ItemVariant} {itemName} with {fillingName} {fillingName2} {fillingName ... } filling added to your basket" if SKU exists in inventory and filling is not null and SKU is a bagel
+        string Add(string SKU)
+            returns "{ItemVariant} {itemName} added to your basket" if SKU exists in inventory
+            returns "{SKU} is not an item on our menu" if SKU does not exist in Bobsinventory.inventory
+            returns "Your basket is full" if ItemsInBasket.Count == inventory.basketCapacity
+        string Add(string SKU, List<string> SKUFilling)
+            returns "{ItemVariant} {itemName} with {fillingName} {fillingName2} {fillingName ... } filling added to your basket" if SKU exists in inventory and fillings
             returns "Can only add filling to bagel" if SKU exists in inventory and filling is not null and SKU is not a bagel
             returns "{SKU} is not an item on our menu" if SKU does not exist in Bobsinventory.inventory,
             returns "Your basket is full" if ItemsInBasket.Count == inventory.basketCapacity

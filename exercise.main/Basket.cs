@@ -18,7 +18,8 @@ namespace main
 
         public float CostOfItem(string SKU)
         {
-            InventoryItem item = BobsInventory.GetItem(SKU, null);
+            string inventoryMessage;
+            InventoryItem item = BobsInventory.GetItem(SKU, out inventoryMessage);
             float cost = item != null ? item.Price : 0;
             return cost;
         }
@@ -45,41 +46,34 @@ namespace main
             return result;
         }
 
-        public string Add(string SKU, List<string> SKUFilling = null)
+        public string Add(string SKU)
         {
             if (ItemsInBasket.Count() >= BasketCapacity)
             {
                 return "Your basket is full";
             }
+            string inventoryMessage;
+            InventoryItem item = BobsInventory.GetItem(SKU, out inventoryMessage);
 
-            InventoryItem item = BobsInventory.GetItem(SKU, SKUFilling);
             if (item == null)
-                return $"{SKU} is not an item on our menu";
+                return inventoryMessage;
 
-            if (item is not Bagel && SKUFilling != null)
-            {
-                return "Can only add filling to bagel";
-            }
-
-            if(item is Bagel)
-            {
-                Bagel bagel = (Bagel)item;
-                string fillingsString = "";
-                for (int i = 0; i < bagel.Fillings.Count(); i++)
-                {
-                    if (i == bagel.Fillings.Count() - 1)
-                    {
-                        fillingsString += $"{bagel.Fillings[i].Variant}";
-                        break;
-                    }
-                    fillingsString += $"{bagel.Fillings[i].Variant} ";
-                }
-                ItemsInBasket.Add(item);
-                return $"{bagel.Variant} {bagel.Name} with {(fillingsString.Length == 0 ? "no" : fillingsString)} filling added to your basket";
-            }
             ItemsInBasket.Add(item);
-            return $"{item.Variant} {item.Name} added to your basket";
-          
+            return inventoryMessage;
+        }
+        public string Add(string SKU, List<string> SKUFilling)
+        {
+            string inventoryMessage;
+            if (ItemsInBasket.Count() >= BasketCapacity)
+                return "Your basket is full";
+            
+
+            InventoryItem item = BobsInventory.GetItem(SKU, SKUFilling, out inventoryMessage);
+            if (item == null)
+                return inventoryMessage;
+
+            ItemsInBasket.Add(item);
+            return inventoryMessage;
         }
 
         public string Remove(InventoryItem item)

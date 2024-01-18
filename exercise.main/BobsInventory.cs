@@ -12,44 +12,60 @@ namespace main
             inventory = new Dictionary<string, InventoryItem>();
             FillInventory();
         }
-        public InventoryItem GetItem(string SKU, List<string> SKUFilling = null)
+        public InventoryItem GetItem(string SKU, out string inventoryMessage)
+        {
+            if (!inventory.ContainsKey(SKU)){
+                inventoryMessage = $"{SKU} is not an item on our menu";
+                return null;
+            }
+            InventoryItem returnItem = inventory[SKU];
+            inventoryMessage = $"{inventory[SKU].Variant} {inventory[SKU].Name} added to your basket";
+            return returnItem;
+        }
+        
+        public InventoryItem GetItem(string SKU, List<string> SKUFilling, out string inventoryMessage)
         {
             InventoryItem returnItem = null;
             List<InventoryItem> fillingList = new List<InventoryItem>();
+
             if (!inventory.ContainsKey(SKU))
             {
-                returnItem = null;
+                inventoryMessage = $"{SKU} is not an item on our menu";
+                return null;
             }
-            else
+
+
+
+            returnItem = inventory[SKU];
+            if (returnItem is not Bagel)
             {
-                returnItem = inventory[SKU];
+                inventoryMessage = "Can only add filling to bagel";
+                return null;
             }
-            if (inventory.ContainsKey(SKU) && SKUFilling != null && inventory[SKU] is Bagel)
+
+
+            // Check if each SKUFilling value is in inventory
+            string fillingString = "";
+            foreach (var filling in SKUFilling)
             {
-
-                returnItem = inventory[SKU];
-
-                // Check if each SKUFilling value is in inventory
-                foreach (var filling in SKUFilling)
+                if (inventory.ContainsKey(filling))
                 {
-                    if (inventory.ContainsKey(filling))
-                    {
-                        fillingList.Add(inventory[filling]);
-                    }
-                    else
-                    {
-                        returnItem = null;
-                    }
+                    fillingString += inventory[filling].Variant + " ";
+                    fillingList.Add(inventory[filling]);
                 }
-
-                Bagel bagel = (Bagel)returnItem;
-                bagel.AddFilling(fillingList);
-                returnItem = bagel;
+                else
+                {
+                    inventoryMessage = $"{SKU} is not an item on our menu";
+                    return null;
+                }
             }
+
+            Bagel bagel = (Bagel)returnItem;
+            bagel.AddFilling(fillingList);
+            returnItem = bagel;
+            inventoryMessage = $"{inventory[SKU].Variant} {inventory[SKU].Name} with {fillingString}filling added to your basket";
             return returnItem;
         }
-
-
         private void FillInventory()
         {
             inventory.Add("BGLO", new Bagel("BGLO", 0.49f, "Onion", "Bagel"));
