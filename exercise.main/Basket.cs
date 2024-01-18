@@ -18,7 +18,6 @@ namespace main
 
         public float CostOfItem(string SKU)
         {
-            bool outParam; // does not do anything. Will need to refactor this later
             InventoryItem item = BobsInventory.GetItem(SKU, null);
             float cost = item != null ? item.Price : 0;
             return cost;
@@ -52,10 +51,15 @@ namespace main
             {
                 return "Your basket is full";
             }
-            bool FillingWithoutBagel;
+
             InventoryItem item = BobsInventory.GetItem(SKU, SKUFilling);
             if (item == null)
                 return $"{SKU} is not an item on our menu";
+
+            if (item is not Bagel && SKUFilling != null)
+            {
+                return "Can only add filling to bagel";
+            }
 
             if(item is Bagel)
             {
