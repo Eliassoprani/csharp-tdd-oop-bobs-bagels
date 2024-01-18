@@ -63,6 +63,16 @@ public class Tests
         Assert.AreEqual("Your basket is full", result);
     }
 
+        [Test]
+    public void AddTest7()
+    {
+        _basket.UpdateCapacity(2);
+        List<string> fillings = new List<string>();
+        fillings.Add("mayonaise");
+        string result = _basket.Add("BGLE", fillings);
+        Assert.AreEqual("mayonaise is not an item on our menu", result);
+    }
+
     [Test]
     public void TotalPriceTest1()
     {

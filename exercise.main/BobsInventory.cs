@@ -55,7 +55,7 @@ namespace main
                 }
                 else
                 {
-                    inventoryMessage = $"{SKU} is not an item on our menu";
+                    inventoryMessage = $"{filling} is not an item on our menu";
                     return null;
                 }
             }
